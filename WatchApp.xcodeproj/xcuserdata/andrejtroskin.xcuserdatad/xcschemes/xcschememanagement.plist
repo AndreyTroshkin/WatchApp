@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>MyWatchApp.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>WatchApp.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -13,6 +18,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>8B2EA8221E87A0D1004A52AC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8B2EA8391E87A117004A52AC</key>
 		<dict>
 			<key>primary</key>
 			<true/>

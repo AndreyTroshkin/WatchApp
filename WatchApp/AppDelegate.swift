@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import WatchConnectivity
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        ToDoListManager.shared.loadList()
+        establishWatchConnection()
         return true
     }
 
@@ -40,7 +42,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
+    func establishWatchConnection(){
+        if (WCSession.isSupported()){
+            WCSession.default().delegate = self
+            WCSession.default().activate()
+        }
+    }
 
 }
 
+extension AppDelegate: WCSessionDelegate{
+    func sessionDidDeactivate(_ session: WCSession) {
+        
+    }
+    func sessionDidBecomeInactive(_ session: WCSession) {
+        
+    }
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        print("iOS activation \(activationState == WCSessionActivationState.activated)")
+        }
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        switch message[MessageAPI.Message.action.identifier] as! String{
+        case MessageAPI.MessageType.getToDoList.identifier:
+            var response: String! = nil
+            DispatchQueue.main.sync {
+                response = ToDoListManager.shared.list.toJSON()
+            }
+            replyHandler([MessageAPI.Message.toDoList.identifier: response])
+        case MessageAPI.MessageType.updateToDoList.identifier:
+            let list = message[MessageAPI.Message.toDoList.identifier] as! String
+            DispatchQueue.main.async {
+                ToDoListManager.shared.updateList(fromJSON: list)
+            }
+        default:
+            break
+        }
+
+    }
+    
+    
+}
